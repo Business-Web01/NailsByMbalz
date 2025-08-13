@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About - NailsByMbalz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Brush+Script+MT&family=Inconsolata&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f9d6dc; /* light pastel pink */
+      font-family: 'Inconsolata', monospace;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    .back-arrow {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      text-decoration: none;
+      color: white;
+      background-color: #333;
+      padding: 4px 10px;
+      border-radius: 50%;
+    }
+
+    h1 {
+      text-align: center;
+      font-family: 'Brush Script MT', cursive;
+      font-size: 3rem;
+      color: #c36e87; /* dark pastel pink */
+      margin-top: 60px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 40px;
+      flex-wrap: wrap;
+    }
+
+    .text-section {
+      flex: 1 1 300px;
+      max-width: 600px;
+    }
+
+    .text-section p {
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+
+    .image-section {
+      flex: 1 1 300px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    .image-section img {
+      width: 250px;
+      height: 250px;
+      object-fit: cover;
+      border: 3px solid #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      position: absolute;
+      animation: unfold 1.2s ease forwards;
+      opacity: 0;
+    }
+
+    .image-section img:first-child {
+      z-index: 2;
+      top: 0;
+      right: 0;
+      animation-delay: 0.2s;
+    }
+
+    .image-section img:last-child {
+      z-index: 1;
+      top: 40px;
+      left: 40px;
+      animation-delay: 0.5s;
+    }
+
+    @keyframes unfold {
+      0% {
+        transform: scale(0.8) rotateX(90deg);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1) rotateX(0deg);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .image-section {
+        margin-top: 40px;
+      }
+
+      .image-section img {
+        width: 200px;
+        height: 200px;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-top: 40px;
+      }
+
+      .text-section {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="index.html" class="back-arrow">&#8592;</a>
+
+  <h1>All about NailsByMbalz</h1>
+
+  <div class="container">
+    <div class="text-section">
+      <p>NailsByMbalz is proudly based in Vosloorus, offering high-quality nail care services with a personal touch.</p>
+      <p>With a passion for beauty and creativity, the nail tech behind NailsByMbalz brings a fresh perspective to every set.</p>
+      <p>The business was founded with the goal of empowering clients through self-expression and confidence.</p>
+      <p>Certified and trained, the nail technician ensures hygiene, professionalism, and the latest in nail trends.</p>
+      <p>Every appointment is an opportunity to create something beautiful, detailed, and uniquely tailored to each client.</p>
+    </div>
+
+    <div class="image-section">
+      <img src="app3.jpg" alt="Nail design 1" />
+      <img src="app4.jpg" alt="Nail design 2" />
+    </div>
+  </div>
+
+</body>
+</html>

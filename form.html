@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Appointment</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #ffe6f0;
+    position: relative;
+    padding-top: 60px;
+  }
+
+  /* Top icons */
+  .top-icons {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .icon {
+    font-size: 28px;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .notification-dot {
+    position: absolute;
+    top: 0;
+    right: -2px;
+    width: 10px;
+    height: 10px;
+    background: red;
+    border-radius: 50%;
+    display: none;
+  }
+
+  .wiggle {
+    animation: wiggle 0.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes wiggle {
+    from { transform: rotate(-10deg); }
+    to { transform: rotate(10deg); }
+  }
+
+  /* Abstract blobs */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(50px);
+    z-index: 0;
+  }
+  .blob1 {
+    width: 200px;
+    height: 200px;
+    background: #ff99c8;
+    top: -50px;
+    left: -50px;
+  }
+  .blob2 {
+    width: 250px;
+    height: 250px;
+    background: #ffb3d9;
+    bottom: -50px;
+    right: -50px;
+  }
+
+  /* Form */
+  form {
+    position: relative;
+    z-index: 1;
+    background: white;
+    padding: 20px;
+    max-width: 400px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  .booking-info {
+    margin-top: 15px;
+    background: #ffe6f0;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 15px;
+    background: #d63384;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  @media(max-width: 600px) {
+    form {
+      margin: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-icons">
+  <a href="home.html" class="icon">&#8592;</a>
+  <span class="icon" id="bell">&#128276;<span class="notification-dot" id="notifDot"></span></span>
+</div>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<form id="bookingForm">
+  <label>Name:</label>
+  <input type="text" id="name" required>
+
+  <label>Email Address:</label>
+  <input type="email" id="email" required>
+
+  <label>Cellphone Number:</label>
+  <input type="tel" id="phone" required>
+
+  <label>What would you like to book an appointment for?</label>
+  <select id="service" required>
+    <option value="">Select...</option>
+    <option value="Acrylic Set">Acrylic Set</option>
+    <option value="Gel Set">Gel Set</option>
+    <option value="Makeup">Makeup</option>
+    <option value="Installation">Installation</option>
+    <option value="Buff & Shine">Buff & Shine</option>
+  </select>
+
+  <div class="booking-info" id="bookingInfo">
+    Your unique booking number: <strong id="bookingNumber"></strong><br>
+    Please pay your booking fee of R100 and use your booking number as the payment reference.
+  </div>
+
+  <label>Date:</label>
+  <input type="date" id="date" required>
+
+  <label>Time:</label>
+  <input type="time" id="time" required>
+
+  <button type="submit">Book my appointment</button>
+</form>
+
+<script>
+  // Generate booking number
+  const bookingNumber = 'MB' + Math.floor(Math.random() * 90000 + 10000);
+  document.getElementById('bookingNumber').textContent = bookingNumber;
+
+  const form = document.getElementById('bookingForm');
+  const bell = document.getElementById('bell');
+  const notifDot = document.getElementById('notifDot');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    // Wiggle bell and show notification
+    bell.classList.add('wiggle');
+    notifDot.style.display = 'block';
+
+    const name = document.getElementById('name').value;
+    const service = document.getElementById('service').value;
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+
+    // Redirect to notify.html with query params
+    const params = new URLSearchParams({
+      name, service, date, time
+    }).toString();
+
+    setTimeout(() => {
+      window.location.href = `notify.html?${params}`;
+    }, 1000);
+  });
+</script>
+
+</body>
+</html>

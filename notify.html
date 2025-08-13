@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notify</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ffe4ef;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* Header */
+  .chat-header {
+    background-color: #f48fb1;
+    color: white;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    position: relative;
+  }
+
+  .chat-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .chat-header small {
+    display: block;
+    font-size: 12px;
+    opacity: 0.9;
+  }
+
+  .back-btn {
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+  }
+
+  /* Client info button */
+  .client-info-btn {
+    background: white;
+    color: #d63384;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* Messages area */
+  .messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .message {
+    max-width: 60%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    word-wrap: break-word;
+    position: relative;
+    display: inline-block;
+  }
+
+  .message img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-top: 5px;
+  }
+
+  .sent {
+    align-self: flex-end;
+    background-color: #d63384;
+    color: white;
+    border-bottom-right-radius: 0;
+  }
+
+  .received {
+    align-self: flex-start;
+    background-color: white;
+    border-bottom-left-radius: 0;
+  }
+
+  .timestamp {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-left: 5px;
+  }
+
+  .tick {
+    font-size: 12px;
+    margin-left: 5px;
+  }
+  .tick.read { color: #4fc3f7; } /* Blue ticks */
+  .tick.unread { color: white; }   /* White ticks */
+
+  /* Input area */
+  .input-area {
+    display: flex;
+    padding: 8px;
+    background-color: #f8bbd0;
+  }
+
+  .input-area input {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    font-size: 14px;
+  }
+
+  .input-area button {
+    background-color: #d63384;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    margin-left: 8px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .camera-btn {
+    background-color: #ff8ab3;
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    margin-left: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  /* Client Info Popup */
+  .info-overlay {
+    display: none;
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    opacity:0;
+    transition: opacity 0.3s ease;
+  }
+  .info-overlay.active { display:block; opacity:1; }
+
+  .info-popup {
+    display: none;
+    position: fixed;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%) scale(0.8);
+    background: white;
+    padding: 25px 20px;
+    border-radius: 10px;
+    width: 300px;
+    max-width: 90%;
+    z-index: 1000;
+    opacity:0;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  }
+  .info-popup.active {
+    display:block;
+    opacity:1;
+    transform: translate(-50%,-50%) scale(1);
+  }
+
+  .info-popup h3 {
+    margin-top:0;
+    text-align:center;
+    color:#d63384;
+  }
+
+  .info-popup p {
+    margin:8px 0;
+  }
+
+  .info-popup button {
+    margin-top:15px;
+    width:100%;
+    padding:10px;
+    border:none;
+    background:#d63384;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:14px;
+  }
+
+  @media(max-width:600px){
+    .messages .message { max-width: 80%; }
+    .input-area input { font-size: 12px; }
+    .input-area button, .camera-btn { font-size: 12px; padding: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="chat-header">
+  <a href="gallery.html" class="back-btn">&#8592;</a>
+  <div>
+    <h2 id="chatTitle">Loading...</h2>
+    <small id="chatSubtitle"></small>
+  </div>
+  <button class="client-info-btn" id="clientInfoBtn">Phone</button>
+</div>
+
+<div class="messages" id="messages"></div>
+
+<div class="input-area">
+  <input type="text" id="messageInput" placeholder="Type a message...">
+  <button class="camera-btn" id="cameraBtn">&#128247;</button>
+  <button onclick="sendMessage()">Send</button>
+  <input type="file" id="imageInput" accept="image/*" style="display:none">
+</div>
+
+<!-- Client Info Popup -->
+<div class="info-overlay" id="infoOverlay" onclick="closeInfo()"></div>
+<div class="info-popup" id="infoPopup">
+  <h3>Client Info</h3>
+  <p><strong>Name:</strong> <span id="popupName"></span></p>
+  <p><strong>Phone:</strong> <span id="popupPhone"></span></p>
+  <p><strong>Appointment:</strong> <span id="popupDateTime"></span></p>
+  <button onclick="closeInfo()">Close</button>
+</div>
+
+<script>
+  // URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  const service = urlParams.get('service') || 'Service';
+  const clientNumber = urlParams.get('clientNumber') || 'Unknown';
+
+  document.getElementById('chatTitle').textContent = clientNumber;
+  document.getElementById('chatSubtitle').textContent = service;
+
+  // Load clients
+  let clients = JSON.parse(localStorage.getItem('clients') || '[]');
+  let currentClient = clients.find(c => c.clientNumber === clientNumber);
+
+  if (!currentClient) {
+    currentClient = { clientNumber, serviceName: service, messages: [] };
+    clients.push(currentClient);
+    localStorage.setItem('clients', JSON.stringify(clients));
+  }
+
+  // Render messages
+  function renderMessages() {
+    const msgContainer = document.getElementById('messages');
+    msgContainer.innerHTML = '';
+    currentClient.messages.forEach(m => {
+      const div = document.createElement('div');
+      div.classList.add('message', m.sender === 'me' ? 'sent' : 'received');
+
+      if(m.type === 'image'){
+        const img = document.createElement('img');
+        img.src = m.content;
+        div.appendChild(img);
+      } else {
+        div.textContent = m.text;
+      }
+
+      // Timestamp
+      const timestamp = document.createElement('span');
+      timestamp.className = 'timestamp';
+      timestamp.textContent = m.time || new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      div.appendChild(timestamp);
+
+      // Ticks
+      const tick = document.createElement('span');
+      tick.classList.add('tick', m.read ? 'read':'unread');
+      tick.textContent = '✔✔';
+      div.appendChild(tick);
+
+      msgContainer.appendChild(div);
+    });
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+  }
+
+  renderMessages();
+
+  // Send text message
+  function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const text = input.value.trim();
+    if(!text) return;
+    const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    currentClient.messages.push({ sender:'me', text, read:true, time:now, type:'text' });
+    localStorage.setItem('clients', JSON.stringify(clients));
+    input.value='';
+    renderMessages();
+  }
+
+  // Camera button
+  const cameraBtn = document.getElementById('cameraBtn');
+  const imageInput = document.getElementById('imageInput');
+
+  cameraBtn.onclick = () => imageInput.click();
+
+  imageInput.onchange = () => {
+    const file = imageInput.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      currentClient.messages.push({ sender:'me', content:e.target.result, read:true, time:now, type:'image' });
+      localStorage.setItem('clients', JSON.stringify(clients));
+      renderMessages();
+    }
+    reader.readAsDataURL(file);
+  }
+
+  // Client Info Popup
+  const clientInfoBtn = document.getElementById('clientInfoBtn');
+  const infoOverlay = document.getElementById('infoOverlay');
+  const infoPopup = document.getElementById('infoPopup');
+  const popupName = document.getElementById('popupName');
+  const popupPhone = document.getElementById('popupPhone');
+  const popupDateTime = document.getElementById('popupDateTime');
+
+  clientInfoBtn.textContent = currentClient.clientPhone || "Phone";
+
+  clientInfoBtn.onclick = function(){
+    popupName.textContent = currentClient.clientName || 'N/A';
+    popupPhone.textContent = currentClient.clientPhone || 'N/A';
+    popupDateTime.textContent = (currentClient.appointmentDate && currentClient.appointmentTime) 
+                                ? `${currentClient.appointmentDate} at ${currentClient.appointmentTime}`
+                                : 'N/A';
+    infoOverlay.classList.add('active');
+    infoPopup.classList.add('active');
+  }
+
+  function closeInfo(){
+    infoOverlay.classList.remove('active');
+    infoPopup.classList.remove('active');
+  }
+</script>
+
+</body>
+</html>

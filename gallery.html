@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery</title>
+<style>
+body { margin:0; font-family:Arial,sans-serif; background:#fca8ca; }
+.header { position:sticky; top:0; background:#fca8ca; display:flex; align-items:center; justify-content:center; padding:12px; border-bottom:1px solid #ddd; z-index:10; }
+.header a { position:absolute; left:15px; text-decoration:none; color:black; font-size:20px; }
+.header h1 { font-family:'Brush Script MT',cursive; font-size:32px; color:black; font-weight:bold; }
+.bell-container { position:absolute; right:15px; cursor:pointer; }
+.bell { font-size:28px; color:#d63384; position:relative; }
+.subheading { font-family:'Brush Script MT',cursive; font-size:26px; color:#0a0a0a; text-align:center; margin:25px 0 10px; }
+.gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; padding:0 20px; }
+.polaroid { background:white; border:1px solid #ccc; border-radius:10px; box-shadow:0 5px 10px rgba(0,0,0,0.1); display:flex; flex-direction:column; overflow:hidden; max-width:220px; margin:0 auto; }
+.polaroid img { width:100%; height:180px; object-fit:cover; display:block; }
+.info { padding:8px 10px; flex-grow:1; display:flex; flex-direction:column; justify-content:space-between; text-align:center; }
+.stars { color:gold; margin:5px 0; }
+.price { font-weight:bold; margin:5px 0; }
+.book-btn { background:#d63384; color:white; padding:6px; border:none; border-radius:5px; cursor:pointer; font-size:14px; }
+
+/* Role popup */
+.role-popup { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000; }
+.role-popup .popup { background:white; padding:20px; border-radius:10px; max-width:300px; width:90%; text-align:center; }
+.role-popup input { width:80%; padding:8px; margin:10px 0; border-radius:5px; border:1px solid #ccc; }
+.role-popup button { padding:8px 15px; margin-top:10px; background:#d63384; color:white; border:none; border-radius:5px; cursor:pointer; }
+
+@media(max-width:900px) { .gallery-grid { grid-template-columns:repeat(2,1fr); gap:15px; } .polaroid { max-width:180px; } .polaroid img { height:150px; } }
+@media(max-width:600px) { .gallery-grid { grid-template-columns:1fr; gap:12px; } .polaroid { max-width:200px; } .polaroid img { height:160px; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="access.html">&#8592;</a>
+  <h1>Gallery</h1>
+  <div class="bell-container">
+    <span class="bell" id="notifBell">&#128276;</span>
+  </div>
+</div>
+
+<h2 class="subheading">Acrylic Set</h2>
+<div class="gallery-grid">
+  <div class="polaroid">
+    <img src="maroon.jfif" alt="Acrylic Set">
+    <div class="info">
+      <div>Name</div>
+      <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="price">R350</div>
+      <button class="book-btn" onclick="bookMe('Acrylic Set')">Book Me</button>
+    </div>
+  </div>
+</div>
+
+<h2 class="subheading">Gel Set</h2>
+<div class="gallery-grid">
+  <div class="polaroid">
+    <img src="gel1.jpg" alt="Gel Set">
+    <div class="info">
+      <div>Name</div>
+      <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="price">R300</div>
+      <button class="book-btn" onclick="bookMe('Gel Set')">Book Me</button>
+    </div>
+  </div>
+</div>
+
+<h2 class="subheading">Buff & Shine</h2>
+<div class="gallery-grid">
+  <div class="polaroid">
+    <img src="buff1.jpg" alt="Buff & Shine">
+    <div class="info">
+      <div>Name</div>
+      <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="price">R200</div>
+      <button class="book-btn" onclick="bookMe('Buff & Shine')">Book Me</button>
+    </div>
+  </div>
+</div>
+
+<!-- Role selection popup -->
+<div class="role-popup" id="rolePopup">
+  <div class="popup">
+    <h3>Are you a Client or Nail Tech?</h3>
+    <button onclick="selectRole('client')">Client</button>
+    <button onclick="selectRole('tech')">Nail Tech</button>
+    <div id="roleInput" style="display:none;">
+      <input type="text" id="roleField" placeholder="">
+      <button onclick="submitRole()">Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Booking function
+function bookMe(serviceName){
+  const clientNumber='MB'+Math.floor(Math.random()*90000+10000);
+  alert(`Thanks for booking! Your client number is ${clientNumber}`);
+  let clients=JSON.parse(localStorage.getItem('clients')||'[]');
+  if(!clients.find(c=>c.clientNumber===clientNumber)){
+    clients.push({clientNumber, serviceName, messages:[], unreadCount:0});
+    localStorage.setItem('clients', JSON.stringify(clients));
+  }
+  setTimeout(()=>{
+    window.location.href=`notify.html?service=${encodeURIComponent(serviceName)}&clientNumber=${clientNumber}`;
+  },2000);
+}
+
+// Bell click triggers role popup
+const notifBell=document.getElementById('notifBell');
+const rolePopup=document.getElementById('rolePopup');
+let selectedRole='';
+notifBell.onclick=()=>{ rolePopup.style.display='flex'; }
+
+function selectRole(role){
+  selectedRole=role;
+  document.getElementById('roleInput').style.display='block';
+  const field=document.getElementById('roleField');
+  field.value='';
+  field.placeholder=role==='client'?'Enter your Client Number':'Enter your Pin';
+}
+
+function submitRole(){
+  const val=document.getElementById('roleField').value.trim();
+  if(!val){ alert('Please enter a value'); return; }
+  let clients=JSON.parse(localStorage.getItem('clients')||'[]');
+  if(selectedRole==='client'){
+    if(!clients.find(c=>c.clientNumber===val)){
+      alert('Client number not found'); return;
+    }
+    const service=clients.find(c=>c.clientNumber===val).serviceName;
+    window.location.href=`notify.html?service=${encodeURIComponent(service)}&clientNumber=${val}`;
+  } else {
+    // Pin check for tech (for simplicity, pin is "1234")
+    if(val!=='1234'){ alert('Incorrect pin'); return; }
+    // Tech sees list of all clients
+    rolePopup.style.display='none';
+    showClientList(clients);
+  }
+}
+
+function showClientList(clients){
+  const listPopup=document.createElement('div');
+  listPopup.style.position='fixed';
+  listPopup.style.top='0'; listPopup.style.left='0';
+  listPopup.style.width='100%'; listPopup.style.height='100%';
+  listPopup.style.background='rgba(0,0,0,0.6)'; listPopup.style.zIndex='1000';
+  listPopup.style.overflowY='auto';
+  listPopup.style.display='flex'; listPopup.style.flexDirection='column'; listPopup.style.alignItems='center'; listPopup.style.padding='20px';
+  const container=document.createElement('div');
+  container.style.background='white'; container.style.borderRadius='10px'; container.style.width='90%'; container.style.maxWidth='300px';
+  container.style.padding='15px';
+  const title=document.createElement('h3'); title.textContent='Booked Clients'; title.style.color='#d63384'; title.style.textAlign='center';
+  container.appendChild(title);
+  clients.forEach(c=>{
+    const item=document.createElement('div');
+    item.textContent=`${c.serviceName} (${c.clientNumber})`;
+    item.style.padding='10px'; item.style.borderBottom='1px solid #eee';
+    item.style.cursor='pointer';
+    item.onclick=()=>{ window.location.href=`notify.html?service=${encodeURIComponent(c.serviceName)}&clientNumber=${c.clientNumber}`; }
+    container.appendChild(item);
+  });
+  listPopup.appendChild(container);
+  document.body.appendChild(listPopup);
+}
+</script>
+
+</body>
+</html>
